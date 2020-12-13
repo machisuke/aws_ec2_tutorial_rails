@@ -1,0 +1,29 @@
+version: '3'
+services:
+  db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: root
+    volumes:
+      - ./etc/mysql/conf.d:/etc/mysql/conf.d
+    ports:
+      - '3306:3306'
+  rails:
+    build: .
+    command: bundle exec rails s -b '0.0.0.0' -p '3000'
+    volumes:
+      - ./sample_app:/app
+    ports:
+      - '3000:3000'
+    tty: true
+    stdin_open: true
+    depends_on:
+      - db
+  webpack:
+    build: .
+    command: "bin/webpack-dev-server"
+    ports:
+      - "3035:3035"
+    depends_on:
+      - rails
